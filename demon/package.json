@@ -1,0 +1,24 @@
+{
+  "name": "demon",
+  "version": "1.0.0",
+  "description": "local synchronizer",
+  "main": "src/index.ts",
+  "author": "Filip M.",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/blessed": "^0.1.22",
+    "@types/prompt-sync": "^4.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "ansi-escapes": "^3.1.0",
+    "blessed": "^0.1.81",
+    "chokidar": "^3.5.3",
+    "node-pty": "^1.0.0",
+    "prompt-skeleton": "^0.4.0",
+    "prompt-sync": "^4.2.0",
+    "tiny-cli-editor": "^0.1.1",
+    "window-size": "^1.1.1"
+  }
+}
