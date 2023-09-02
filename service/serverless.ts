@@ -1,10 +1,5 @@
 import type { AWS } from '@serverless/typescript';
 
-// import fallback from '@functions/fallback';
-// import connect from '@functions/connect';
-// import disconnect from '@functions/disconnect';
-// import getFiles from '@functions/getFiles';
-
 const serverlessConfiguration: AWS = {
   service: 'service',
   frameworkVersion: '3',
@@ -32,6 +27,7 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       CONNECTION_TABLE: '${self:custom.dynamoDB.connectionTable}',
       FILES_TABLE: '${self:custom.dynamoDB.filesTable}',
+      SHARED_STORAGE_BUCKET: '${self:custom.sharedStorageBucket}',
       APIG_ENDPOINT: 'https://${self:custom.apiGatewayId}.execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}',
     },
     iamRoleStatements: [
@@ -91,11 +87,35 @@ const serverlessConfiguration: AWS = {
         }
       ],
     },
+    storageGet : {
+      handler: 'src/index.storageGet',
+      events: [
+        {
+          websocket: 'storage/get',
+        }
+      ],
+    },
     storageList : {
       handler: 'src/index.storageList',
       events: [
         {
           websocket: 'storage/list',
+        }
+      ],
+    },
+    storageRemove : {
+      handler: 'src/index.storageRemove',
+      events: [
+        {
+          websocket: 'storage/remove',
+        }
+      ],
+    },
+    storageUpsert : {
+      handler: 'src/index.storageUpsert',
+      events: [
+        {
+          websocket: 'storage/upsert',
         }
       ],
     },
@@ -110,6 +130,7 @@ const serverlessConfiguration: AWS = {
       connectionTable: 'websocket-connections-table',
       filesTable: 'files-table',
     },
+    sharedStorageBucket: 'shared-files-storage',
     apiGatewayId: 'o1gb5aeep6',
     esbuild: {
       bundle: true,

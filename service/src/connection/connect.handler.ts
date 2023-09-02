@@ -6,15 +6,13 @@ const dynamoClient = new DynamoDBClient({});
 const connect: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const id = event.requestContext.connectionId;
-    console.log("Connecting...", id);
-    const test = await dynamoClient.send(new PutItemCommand({
+
+    await dynamoClient.send(new PutItemCommand({
       TableName: process.env.CONNECTION_TABLE,
       Item: { 
         id : { S: id },
       }
     }));
-
-    console.log(JSON.stringify(test.Attributes));
 
     return {
       statusCode: 200,

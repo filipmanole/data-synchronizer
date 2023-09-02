@@ -4,6 +4,7 @@ import sendMessage from "@common/sendMessage";
 
 const dynamoClient = new DynamoDBClient({});
 
+// { "route": "storage/list"}
 const list: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const id = event.requestContext.connectionId;
@@ -22,7 +23,7 @@ const list: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResul
     return {
       statusCode: 200,
       body: JSON.stringify({
-        msg: 'Default route',
+        msg: 'Files listed',
       })
     };
   } catch (error) {
