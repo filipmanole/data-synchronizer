@@ -3,10 +3,9 @@ import { DeleteItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 const dynamoClient = new DynamoDBClient({});
 
-export const main: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
+export const disconnect: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const id = event.requestContext.connectionId;
-    console.log('event DISCONNECT: ', id);
 
     await dynamoClient.send(new DeleteItemCommand({
       TableName: process.env.CONNECTION_TABLE,
@@ -31,3 +30,4 @@ export const main: APIGatewayProxyHandler = async (event): Promise<APIGatewayPro
   };
 };
 
+export default disconnect;

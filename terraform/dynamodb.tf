@@ -7,11 +7,6 @@ resource "aws_dynamodb_table" "websocket_connections_table" {
     name = "id"
     type = "S"
   }
-
-  ttl {
-    enabled        = true
-    attribute_name = "ttl"
-  }
 }
 
 resource "aws_dynamodb_table" "files_table" {

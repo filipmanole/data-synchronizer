@@ -1,8 +1,9 @@
 import type { AWS } from '@serverless/typescript';
 
-import fallback from '@functions/fallback';
-import connect from '@functions/connect';
-import disconnect from '@functions/disconnect';
+// import fallback from '@functions/fallback';
+// import connect from '@functions/connect';
+// import disconnect from '@functions/disconnect';
+// import getFiles from '@functions/getFiles';
 
 const serverlessConfiguration: AWS = {
   service: 'service',
@@ -29,7 +30,8 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      CONNECTION_TABLE: '${self:custom.connectionTable}',
+      CONNECTION_TABLE: '${self:custom.dynamoDB.connectionTable}',
+      FILES_TABLE: '${self:custom.dynamoDB.filesTable}',
       APIG_ENDPOINT: 'https://${self:custom.apiGatewayId}.execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}',
     },
     iamRoleStatements: [
@@ -64,12 +66,40 @@ const serverlessConfiguration: AWS = {
       }
     ]
   },
-  // import the function via paths
   functions: {
-    connect,
-    disconnect,
-    fallback,
-  }, 
+    connect: {
+      handler: 'src/index.connect',
+      events: [
+        {
+          websocket: '$connect',
+        }
+      ],
+    },
+    disconnect: {
+      handler: 'src/index.disconnect',
+      events: [
+        {
+          websocket: '$disconnect',
+        }
+      ],
+    },
+    fallback: {
+      handler: 'src/index.fallback',
+      events: [
+        {
+          websocket: '$default',
+        }
+      ],
+    },
+    storageList : {
+      handler: 'src/index.storageList',
+      events: [
+        {
+          websocket: 'storage/list',
+        }
+      ],
+    },
+  },
   package: { 
     individually: true,
     excludeDevDependencies: true,

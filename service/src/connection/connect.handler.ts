@@ -1,21 +1,20 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { PutItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import dayjs from 'dayjs';
 
 const dynamoClient = new DynamoDBClient({});
 
-export const main: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
+const connect: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const id = event.requestContext.connectionId;
-    console.log('event CONNECT: ', id);
-
-    await dynamoClient.send(new PutItemCommand({
+    console.log("Connecting...", id);
+    const test = await dynamoClient.send(new PutItemCommand({
       TableName: process.env.CONNECTION_TABLE,
       Item: { 
         id : { S: id },
-        // ttl: { N: dayjs().add(30, "minutes").unix().toString() },
       }
     }));
+
+    console.log(JSON.stringify(test.Attributes));
 
     return {
       statusCode: 200,
@@ -34,3 +33,5 @@ export const main: APIGatewayProxyHandler = async (event): Promise<APIGatewayPro
     })
   };
 };
+
+export default connect;

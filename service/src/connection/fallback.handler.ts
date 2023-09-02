@@ -1,13 +1,10 @@
-import sendMessage from "@libs/sendMessage";
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { ScanCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import sendMessage from "@common/sendMessage";
 
 const dynamoClient = new DynamoDBClient({});
 
-export const main: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
-
-  // const { domainName, stage } = event.requestContext;
-  // const endpoint = domainName + '/' + stage;
+export const fallback: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const scanResult = await dynamoClient.send(new ScanCommand({
       TableName: process.env.CONNECTION_TABLE,
@@ -34,3 +31,5 @@ export const main: APIGatewayProxyHandler = async (event): Promise<APIGatewayPro
     })
   };
 }
+
+export default fallback;
