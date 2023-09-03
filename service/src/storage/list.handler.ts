@@ -4,7 +4,7 @@ import sendMessage from "@common/sendMessage";
 
 const dynamoClient = new DynamoDBClient({});
 
-// { "route": "storage/list"}
+// { "route": "storage/list" }
 const list: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const id = event.requestContext.connectionId;
@@ -15,7 +15,7 @@ const list: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResul
 
     const files = scanResult.Items.map(item => ({
       path: item.path.S,
-      hash: item.hash?.S,
+      sum: item.sum?.S,
     }));
 
     await sendMessage(id, JSON.stringify(files));

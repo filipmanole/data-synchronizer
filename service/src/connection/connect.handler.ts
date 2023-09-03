@@ -1,5 +1,6 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-import { PutItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { PutItemCommand, DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
+import sendMessage from "@common/sendMessage";
 
 const dynamoClient = new DynamoDBClient({});
 
@@ -13,6 +14,24 @@ const connect: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyRe
         id : { S: id },
       }
     }));
+
+    const scanResult = await dynamoClient.send(new ScanCommand({
+      TableName: process.env.FILES_TABLE,
+      ExpressionAttributeNames: { "#p": "path", "#s": "sum" },
+      ProjectionExpression: '#p, #s',
+    }));
+
+    const sync = {
+      route: 'storage/sync',
+      body: {
+        list: scanResult.Items?.map(item => ({
+          path: item.path.S,
+          sum: item.sum?.S,
+        }))
+      }
+    }
+
+    sendMessage(id, JSON.stringify(sync));
 
     return {
       statusCode: 200,

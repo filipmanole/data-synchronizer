@@ -2,22 +2,25 @@ import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda/trigge
 // import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import broadcastMessageExcept from '@common/broadcastMessageExcept';
+import computeHash from "@common/computeHash";
 
 // const s3Client = new S3Client({});
 const dynamoClient = new DynamoDBClient({});
 
-// { "route": "storage/upsert", "body": { "path": "test", content: "Hello there!" } }
+// { "route": "storage/upsert", "body": { "path": "test", "content": "Hello" } }
 const upsert: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
     const id = event.requestContext.connectionId;
     const { path, content } = JSON.parse(event.body).body;
 
+    const sum = computeHash(path, content);
+
     await dynamoClient.send(new UpdateItemCommand({
       TableName: process.env.FILES_TABLE,
       Key: { path : { S: path } },
-      ExpressionAttributeNames: { "#c": "content" },
-      ExpressionAttributeValues: { ":c": { "S": content } },
-      UpdateExpression: "SET #c = :c"
+      ExpressionAttributeNames: { "#c": "content", "#s": "sum" },
+      ExpressionAttributeValues: { ":c": { "S": content }, ":s": { "S": sum} },
+      UpdateExpression: "SET #c = :c, #s = :s"
     }));
 
     // /* save file on s3 */

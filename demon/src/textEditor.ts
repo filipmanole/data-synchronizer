@@ -19,6 +19,7 @@ const Editor = {
 	},
 
 	abort: function (c) {
+		console.log('abort');
 		this.done = true
 		this.aborted = !(c.ctrl && c.name === 'd')
 		this.out.write(esc.clearScreen + esc.cursorTo(0, 0))
@@ -26,6 +27,7 @@ const Editor = {
 	},
 
 	submit: function () {
+		console.log('submit');
 		const line = this.lines[this.cursorY]
 		this.lines.splice(this.cursorY, 1, line.slice(0, this.cursorX), line.slice(this.cursorX))
 		this.cursorY++
@@ -121,8 +123,6 @@ const Editor = {
 		this.update()
 		this.render()
 	},
-
-
 
 	render: function () {
 		if (this.firstRender) {
