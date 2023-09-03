@@ -6,7 +6,7 @@
   "author": "Filip M.",
   "license": "MIT",
   "scripts": {
-    "start": "ROOT_DIR=shared_data ts-node src/index.ts"
+    "start": "ROOT_DIR=shared_data_0 ts-node src/index.ts"
   },
   "devDependencies": {
     "@types/blessed": "^0.1.22",
