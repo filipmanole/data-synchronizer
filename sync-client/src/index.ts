@@ -1,17 +1,6 @@
 import readline from 'node:readline/promises';
 import fs from 'fs/promises';
 import WebSocket from 'ws';
-import editor from './textEditor';
-// import http from 'http';
-// import { htmlTextEditor } from './textArea';
-
-// @ts-ignore
-// const server = http.createServer((request, response) => {
-//   response.write(htmlTextEditor('fileeeee'));  
-//   response.end();  
-// }).listen(8080);
-
-// server.close();
 
 const ROOT_DIR = process.env.ROOT_DIR;
 
@@ -37,7 +26,10 @@ socket.on('message', (data) => {
       remove(body.path);
       break;
     case 'storage/upsert':
-      // TODO: set text
+      upsert(body.path, body.content);
+      break;
+    case 'storage/sync':
+      
       break;
     default:
       break;
@@ -85,42 +77,13 @@ const remove = async (filepath: string, send = false) => {
   }
 }
 
-const edit = async (filepath: string, send = false) => {
+const upsert = async (filepath: string, content?: string, send = false) => {
   if (!filepath) {
     console.log('incorrect arguments...');
     return;
   }
 
-  const str = await fs.readFile(ROOT_DIR + '/' + filepath);
-  openedFiles[filepath] = str.toString();
-
-  return new Promise(async (resolve, reject) => {
-    editor(str.toString())
-    .on('data', async (text: any) => {
-      if(!text?.value) return;
-      if(send) {
-        socket.send(JSON.stringify({
-          route: 'storage/upsert',
-          body: { 
-            path: filepath,
-            content: text,
-          },
-        }));
-      }
-
-      // fs.writeFileSync("programming.txt", text.value);
-    })
-    .on('abort', async (text: any) => {
-      if(!text?.value) return;
-      delete openedFiles[filepath];
-      reject(new Error('aborted'));
-    })
-    .on('submit', async (text: any) => {
-      if(!text?.value) return;
-      delete openedFiles[filepath];
-      resolve(undefined);
-    })
-  });
+  await fs.writeFile(ROOT_DIR + '/' + filepath, content ?? '');
 }
 
 const exit = () => {
@@ -133,16 +96,12 @@ const processCommand = async (cmd: string) => {
   const tokens: string[] = cmd.split(' ');
 
   switch (tokens[0]) {
-    case 'echo':
-      socket.send("echo");
-    break;
-
     case 'create':
       await create(tokens[1], true);
       break;
 
-    case 'edit':      
-      await edit(tokens[1], true);
+    case 'upsert':      
+      await upsert(tokens[1], tokens[2], true);
       break;
 
     case 'remove':
