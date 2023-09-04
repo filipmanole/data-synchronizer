@@ -1,10 +1,8 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-// import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import broadcastMessageExcept from '@common/broadcastMessageExcept';
 import computeHash from "@common/computeHash";
 
-// const s3Client = new S3Client({});
 const dynamoClient = new DynamoDBClient({});
 
 // { "route": "storage/upsert", "body": { "path": "test", "content": "Hello" } }
@@ -22,13 +20,6 @@ const upsert: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyRes
       ExpressionAttributeValues: { ":c": { "S": content }, ":s": { "S": sum} },
       UpdateExpression: "SET #c = :c, #s = :s"
     }));
-
-    // /* save file on s3 */
-    // await s3Client.send(new PutObjectCommand({
-    //   Bucket: process.env.SHARED_STORAGE_BUCKET,
-    //   Key: path,
-    //   Body: content,
-    // }));
 
     await broadcastMessageExcept(id, event.body);
 

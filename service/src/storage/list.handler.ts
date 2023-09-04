@@ -11,14 +11,21 @@ const list: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResul
 
     const scanResult = await dynamoClient.send(new ScanCommand({
       TableName: process.env.FILES_TABLE,
+      ExpressionAttributeNames: { "#p": "path", "#s": "sum" },
+      ProjectionExpression: '#p, #s',
     }));
 
-    const files = scanResult.Items.map(item => ({
-      path: item.path.S,
-      sum: item.sum?.S,
-    }));
+    const list = {
+      route: 'storage/list',
+      body: {
+        list: scanResult.Items?.map(item => ({
+          path: item.path.S,
+          sum: item.sum?.S,
+        }))
+      }
+    }
 
-    await sendMessage(id, JSON.stringify(files));
+    sendMessage(id, JSON.stringify(list));
 
     return {
       statusCode: 200,
