@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@connection/*": ["src/connection/*"],
+      "@storage/*": ["src/storage/*"],
+    }
+  }
+}

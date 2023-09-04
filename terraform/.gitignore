@@ -1,0 +1,11 @@
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.backup
+.terraformrc
+terraform.rc
+terraform.tfvars
+*.log
+
+# Exclude any sensitive files or credentials
+secrets.tfvars
