@@ -1,3 +1,3 @@
 # data-synchronizer
 
-Node.JS, Serverless, Terraform, React
+[Documentation](https://www.craft.me/s/P45aRHfEGACLqy)
